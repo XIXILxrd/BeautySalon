@@ -2,17 +2,16 @@
 using BeautySalon.Logger;
 using BeautySalon.Services;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace BeautySalon.Collection
 {
-    delegate void SortType<T>(Func<T, T, int> compare);
+    delegate LList<T> SortType<T>(Func<T, T, int> compare);
 
     [Serializable]
     public class LList<T> : ICollection<T>
     {
         public Logging<T> log = new Logging<T>();
-
-        private LList<T> list;
 
         private Node<T>? head;
         private Node<T>? tail;
@@ -22,8 +21,7 @@ namespace BeautySalon.Collection
 
         public LList()
         {
-            type = DefaultSort;
-            list = new LList<T>();
+            type = BubbleSortAsync;
         }
 
         public Node<T>? GetHead() => head;
@@ -31,6 +29,17 @@ namespace BeautySalon.Collection
         public LList<T> GetLinkList()
         {
             log.LogInformation("GetLinkList() was started...");
+
+            LList<T> list = new LList<T>();
+
+            Node<T>? current = head;
+
+            while (current != null)
+            {
+                list.Add(current.value);
+
+                current = current.next;
+            }
 
             return list;
         }
@@ -322,7 +331,7 @@ namespace BeautySalon.Collection
             return new ListEnumerator<T>(this);
         }
 
-        public LList<T>? Sort()
+        public LList<T> Sort()
         {
             if (head is null)
             {
@@ -333,12 +342,14 @@ namespace BeautySalon.Collection
 
             log.LogInformation("Sort() was started.");
 
-            return type?.Invoke(CompareByPrice);
+            return type?.Invoke(CompareByName);
         }
 
-        private async Task BubbleSortAsync(Func<T, T, int> compare)
+        private LList<T> BubbleSortAsync(Func<T, T, int> compare)
         {
             log.LogInformation("Sort() was started using BubbleSort().");
+
+            LList<T> list = GetLinkList();
 
             T[] tempArray = new T[list.Count];
             list.CopyTo(tempArray, 0);
@@ -364,11 +375,15 @@ namespace BeautySalon.Collection
             {
                 list.Add(item);
             }
+
+            return list;
         }
 
-        private async Task DefaultSort(Func<T, T, int> compare)
+        private LList<T> DefaultSort(Func<T, T, int> compare)
         {
             log.LogInformation("Sort() was started using DefaultSort().");
+
+            LList<T> list = GetLinkList();
 
             T[] tempArray = new T[list.Count];
 
@@ -382,6 +397,8 @@ namespace BeautySalon.Collection
             {
                 list.Add(item);
             }
+
+            return list;    
         }
 
         private int CompareByPrice(T a, T b)

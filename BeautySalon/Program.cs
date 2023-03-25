@@ -11,11 +11,6 @@ namespace BeautySalon
         public static void Main(string[] args)
         {
             LList<Service> list = new LList<Service>();
-            Serializer serializer = new Serializer(list);
-            PrintLog printLog = new PrintLog();
-
-            list.log.Display += printLog.ToConsole;
-            serializer.log.Display += printLog.ToConsole;
 
             list.Add(new Pompadour(
                 "B",
@@ -32,15 +27,11 @@ namespace BeautySalon
                 500.0,
                 "hehsi"));
             list.Add(new HairColoring(
-                "Black color",
+                "C color",
                 11024.0,
                 "Coloring hair in black"));
 
-            serializer.ToXML("C:\\Users\\Public");
-
-            list.Clear();
-
-            list = serializer.FromXML("C:\\Users\\Public");
+            list = list.Sort();
 
             list.Display();
 
