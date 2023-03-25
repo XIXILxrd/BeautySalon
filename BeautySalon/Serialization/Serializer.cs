@@ -2,15 +2,16 @@
 using BeautySalon.Exceptions;
 using BeautySalon.Logger;
 using BeautySalon.Services;
+using BeautySalon.Services.Haircuts;
 using Newtonsoft.Json;
 using System.Configuration;
 using System.Xml.Serialization;
 
-namespace BeautySalon
+namespace BeautySalon.Serialization
 {
-    class Serializer
+    class Serializer : ISerializable
     {
-        Logging<Service> log = new Logging<Service>();
+        public Logging<Service> log = new Logging<Service>();
 
         private LList<Service>? list;
 
@@ -37,8 +38,12 @@ namespace BeautySalon
             catch (CustomException ex)
             {
                 log.LogError("Error writing to json file");
+
                 throw new CustomException(ex.Message, -1);
             }
+
+            log.LogInformation("Success serialization to json");
+
         }
 
         public LList<Service>? FromJSON(string path)
@@ -56,13 +61,16 @@ namespace BeautySalon
                 {
                     TypeNameHandling = TypeNameHandling.All
                 });
-               
+
             }
             catch (CustomException ex)
             {
                 log.LogError("Error reading from json file");
                 throw new CustomException(ex.Message, -1);
             }
+
+            log.LogInformation("Success deserialization from json");
+
 
             return deserializesList;
         }
@@ -73,7 +81,8 @@ namespace BeautySalon
 
             var filePathConfig = ConfigurationManager.AppSettings.Get("serializeFileNameXML");
 
-            XmlSerializer xmlSerializer = new XmlSerializer(typeof(LList<Service>));
+            XmlSerializer xmlSerializer = new XmlSerializer(typeof(LList<Service>),
+                 new Type[] { typeof(Service), typeof(Massage), typeof(HairColoring), typeof(Haircut), typeof(Pixie), typeof(Pompadour) });
 
             try
             {
@@ -91,6 +100,8 @@ namespace BeautySalon
                 throw new CustomException($"Error reading from xml file, , {ex.Message}", -1);
             }
 
+            log.LogInformation("Success deserialization from xml");
+
             return deserializesList;
         }
 
@@ -99,7 +110,8 @@ namespace BeautySalon
             var filePathConfig = ConfigurationManager.AppSettings.Get("serializeFileNameXML");
 
 
-            XmlSerializer xmlSerializer = new XmlSerializer(typeof(LList<Service>));
+            XmlSerializer xmlSerializer = new XmlSerializer(typeof(LList<Service>), 
+                new Type[] { typeof(Service), typeof(Massage), typeof(HairColoring), typeof(Haircut), typeof(Pixie), typeof(Pompadour) });
 
             try
             {
@@ -116,6 +128,8 @@ namespace BeautySalon
 
                 throw new CustomException($"Error writing to xml file, {ex.Message}", -1);
             }
+
+            log.LogInformation("Success serialization to xml");
         }
 
     }

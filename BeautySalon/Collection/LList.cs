@@ -5,12 +5,14 @@ using System.Collections;
 
 namespace BeautySalon.Collection
 {
-    delegate LList<T> SortType<T>(Func<T, T, int> compare);
+    delegate void SortType<T>(Func<T, T, int> compare);
 
     [Serializable]
     public class LList<T> : ICollection<T>
     {
-        Logging<T> log = new Logging<T>();
+        public Logging<T> log = new Logging<T>();
+
+        private LList<T> list;
 
         private Node<T>? head;
         private Node<T>? tail;
@@ -21,6 +23,7 @@ namespace BeautySalon.Collection
         public LList()
         {
             type = DefaultSort;
+            list = new LList<T>();
         }
 
         public Node<T>? GetHead() => head;
@@ -28,17 +31,6 @@ namespace BeautySalon.Collection
         public LList<T> GetLinkList()
         {
             log.LogInformation("GetLinkList() was started...");
-
-            LList<T> list = new LList<T>();
-
-            Node<T>? current = head;
-
-            while (current != null)
-            {
-                list.Add(current.value);
-
-                current = current.next;
-            }
 
             return list;
         }
@@ -344,11 +336,9 @@ namespace BeautySalon.Collection
             return type?.Invoke(CompareByPrice);
         }
 
-        private LList<T> BubbleSort(Func<T, T, int> compare)
+        private async Task BubbleSortAsync(Func<T, T, int> compare)
         {
             log.LogInformation("Sort() was started using BubbleSort().");
-
-            LList<T>? list = GetLinkList();
 
             T[] tempArray = new T[list.Count];
             list.CopyTo(tempArray, 0);
@@ -370,21 +360,15 @@ namespace BeautySalon.Collection
                 }
             }
 
-            LList<T> newList = new LList<T>();
-
             foreach (var item in tempArray)
             {
-                newList.Add(item);
+                list.Add(item);
             }
-
-            return newList;
         }
 
-        private LList<T> DefaultSort(Func<T, T, int> compare)
+        private async Task DefaultSort(Func<T, T, int> compare)
         {
             log.LogInformation("Sort() was started using DefaultSort().");
-
-            LList<T>? list = GetLinkList();
 
             T[] tempArray = new T[list.Count];
 
@@ -394,14 +378,10 @@ namespace BeautySalon.Collection
 
             Array.Sort(tempArray, (x, y) => compare(x, y));
 
-            LList<T> newList = new LList<T>();
-
             foreach (var item in tempArray)
             {
-                newList.Add(item);
+                list.Add(item);
             }
-
-            return newList;
         }
 
         private int CompareByPrice(T a, T b)
@@ -410,7 +390,7 @@ namespace BeautySalon.Collection
 
             if (a is Service && b is Service)
             {
-                return (a as Service).Price.CompareTo((b as Service).Price);
+                return (a as Service).Price  >= ((b as Service).Price) ? 1 : -1;
             }
 
             log.LogError("It can't be compared, because it doesn't correspond to the class Service");
