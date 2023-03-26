@@ -8,31 +8,35 @@ namespace BeautySalon
 {
     class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
+            PrintLog printLog = new PrintLog();
             LList<Service>? list = new LList<Service>();
+
+            list.log.Display += printLog.ToConsole;
 
             list.Add(new Pompadour(
                 "B",
                 "Default",
                 1002.0,
-                "Hello world"));
+                "Pompadour"));
             list.Add(new Pixie(
                 "D",
                 "Default",
                 1003.0,
-                "Hello world"));
+                "Pixie"));
             list.Add(new Massage(
                 "A",
                 500.0,
-                "hehsi"));
+                "Massage"));
             list.Add(new HairColoring(
-                "C color",
+                "C",
                 123123121231,
-                "Coloring hair in black"));
+                "HairColoring"));
+
+            list = await list.Sort();
 
             list?.Display();
-
         }
     }
 }
