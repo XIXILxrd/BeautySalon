@@ -11,7 +11,7 @@ namespace BeautySalon.Serialization
 
         public LList<Service>? FromJSON(string path);
 
-        public LList<Service?> FromXML(string path);
+        public LList<Service>? FromXML(string path);
 
     }
 }

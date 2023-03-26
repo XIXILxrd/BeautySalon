@@ -224,6 +224,8 @@ namespace BeautySalon.Collection
 
         public bool Remove(T value)
         {
+            Convert.ChangeType(value, typeof(Service));
+
             if (head.value.Equals(value))
             {
                 log.LogInformation("Head was removed");
@@ -331,7 +333,7 @@ namespace BeautySalon.Collection
             return new ListEnumerator<T>(this);
         }
 
-        public LList<T> Sort()
+        public LList<T>? Sort()
         {
             if (head is null)
             {
@@ -342,7 +344,7 @@ namespace BeautySalon.Collection
 
             log.LogInformation("Sort() was started.");
 
-            return type?.Invoke(CompareByName);
+            return type?.Invoke(CompareByPrice);
         }
 
         private LList<T> BubbleSortAsync(Func<T, T, int> compare)
@@ -407,7 +409,7 @@ namespace BeautySalon.Collection
 
             if (a is Service && b is Service)
             {
-                return (a as Service).Price  >= ((b as Service).Price) ? 1 : -1;
+                return (a as Service).Price  <= ((b as Service).Price) ? 1 : -1;
             }
 
             log.LogError("It can't be compared, because it doesn't correspond to the class Service");

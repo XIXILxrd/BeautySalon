@@ -10,7 +10,7 @@ namespace BeautySalon
     {
         public static void Main(string[] args)
         {
-            LList<Service> list = new LList<Service>();
+            LList<Service>? list = new LList<Service>();
 
             list.Add(new Pompadour(
                 "B",
@@ -28,12 +28,10 @@ namespace BeautySalon
                 "hehsi"));
             list.Add(new HairColoring(
                 "C color",
-                11024.0,
+                123123121231,
                 "Coloring hair in black"));
 
-            list = list.Sort();
-
-            list.Display();
+            list?.Display();
 
         }
     }
